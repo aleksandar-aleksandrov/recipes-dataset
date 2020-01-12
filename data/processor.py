@@ -86,6 +86,21 @@ def to_docs(tokens: List[Dict[str, Any]]) -> None:
             f.write(token[RecipeKeyValues.INGREDIENTS])
 
 
+def to_open_nlp(tokens: List[Dict[str, Any]]) -> None:
+    path: Path = Path(__file__).absolute().parent.joinpath("processed/opennlp.txt")
+
+    lines = []
+    for index, token in enumerate(tokens):
+        ingredients: str = token[RecipeKeyValues.INGREDIENTS]
+        ingredients = ingredients.replace("\n", "")
+
+        line = f"{index} {ingredients}\n"
+        lines.append(line)
+
+    with path.open("w") as f:
+        f.writelines(lines)
+
+
 if __name__ == '__main__':
     data: str = load_data()
     recipes: List[str] = data.split("------------- Recipe Extracted from Meal-Master (tm) Database --------------")[1:]
@@ -103,5 +118,8 @@ if __name__ == '__main__':
 
     print(f'Saving the ingredients in separate documents...')
     to_docs(tokens)
+
+    print(f'Saving the ingredients in Apache OpenNLP format...')
+    to_open_nlp(tokens)
 
     print(f'The results can be found in the data/processed folder!')
